@@ -1,25 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import BucketList from "./BucketList";
+import './style.css'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      list: ["영화관 가기", "매일 책읽기", "수영 배우기"],
+    };
+
+    this.text = React.createRef();
+  }
+
+  componentDidMount() { 
+  }
+
+  addBucket = () => {
+    console.log(this.text.current.value);
+    const new_item = this.text.current.value;
+    // ... => 스프레드 문법
+    // [...this.state.list, 넣고 싶었던 어떤 값]
+    this.setState({ list: [...this.state.list, new_item] });
+  }
+
+  render() {
+
+    return (
+      <div className="App">
+      <div className="Container">
+        <h1> TodoList </h1>
+        <hr className="line" />
+        <BucketList list={this.state.list} />
+      </div>
+
+      <div className="InputWrap">
+        <input type="text" ref={this.text} />
+        <button onClick={this.addBucket}>ADD</button>
+      </div>
+      </div>
+    );
+  }
 }
 
 export default App;
