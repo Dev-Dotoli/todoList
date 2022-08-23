@@ -129,8 +129,12 @@ function App() {
   const [nextId, setNextId] = useState(4);
   const [topics, setTopics] = useState([
     { id: 1, title: "Todolist", body: "Todolist done..." },
-    { id: 2, title: "Workout", body: "Work out byceps every day..." },
+    { id: 2, title: "Workout byceps", body: "Work out byceps every day..." },
     { id: 3, title: "Protein", body: "Eat protein at every meal..." },
+    { id: 4, title: "Workout triceps", body: "Work out triceps every day..." },
+    { id: 5, title: "Clean up", body: "Clean up every day..." },
+    { id: 6, title: "Today I Learned", body: "Write TIL on my board..." },
+    { id: 7, title: "Sleep", body: "Sleep tight..." },
   ]);
 
   let content = null;
