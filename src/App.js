@@ -150,7 +150,7 @@ function App() {
     content = <Article title={title} body={body}></Article>;
     contextControl = (
       <>
-        <li>
+        <li className="footlistbtn">
           <a
             href={"/update" + id}
             onClick={function (event) {
@@ -161,7 +161,7 @@ function App() {
             <button>Update</button>
           </a>
         </li>
-        <li>
+        <li className="footlistbtn">
           <input
             type="button"
             value="Delete"
@@ -240,7 +240,7 @@ function App() {
       ></Nav>
       {content}
       <ul className="ulfoot">
-        <li className="btnlist">
+        <li className="footlistbtn">
           <a
             href="/create"
             onClick={function (event) {

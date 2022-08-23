@@ -1,6 +1,6 @@
 .html,
 body {
-  background-color: #bcbcbc;
+  background-color: #727272;
   padding-top: 5vh;
 }
 
@@ -60,4 +60,8 @@ body {
   margin: 1vw 1vh;
   padding: 2%;
   list-style: none;
+}
+
+.footlistbtn {
+  margin: 1%;
 }
