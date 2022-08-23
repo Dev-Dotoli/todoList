@@ -57,7 +57,7 @@ function Article(props) {
 function Create(props) {
   return (
     <article className="article">
-      <h2>create</h2>
+      <h2>Add</h2>
       <form
         onSubmit={function (event) {
           event.preventDefault();
@@ -70,10 +70,14 @@ function Create(props) {
           <input type="text" name="title" placeholder="title" />
         </p>
         <p>
-          <textarea name="body" placeholder="body"></textarea>
+          <textarea
+            className="textarea"
+            name="body"
+            placeholder="body"
+          ></textarea>
         </p>
         <p>
-          <input type="submit" value="Create"></input>
+          <input type="submit" value="Add"></input>
         </p>
       </form>
     </article>
@@ -107,6 +111,7 @@ function Update(props) {
         </p>
         <p>
           <textarea
+            className="textarea"
             name="body"
             placeholder="body"
             value={body}
@@ -126,22 +131,24 @@ function Update(props) {
 function App() {
   const [mode, setMode] = useState("WELCOME");
   const [id, setId] = useState(null);
-  const [nextId, setNextId] = useState(4);
+  const [nextId, setNextId] = useState(8);
   const [topics, setTopics] = useState([
-    { id: 1, title: "Todolist", body: "Todolist done..." },
-    { id: 2, title: "Workout byceps", body: "Work out byceps every day..." },
-    { id: 3, title: "Protein", body: "Eat protein at every meal..." },
-    { id: 4, title: "Workout triceps", body: "Work out triceps every day..." },
+    { id: 1, title: "Todolist", body: "Todolist done" },
+    { id: 2, title: "Workout byceps", body: "Work out byceps every day" },
+    { id: 3, title: "Protein", body: "Eat protein at every meal" },
+    { id: 4, title: "Workout triceps", body: "Work out triceps every day" },
     { id: 5, title: "Clean up", body: "Clean up every day..." },
-    { id: 6, title: "Today I Learned", body: "Write TIL on my board..." },
-    { id: 7, title: "Sleep", body: "Sleep tight..." },
+    { id: 6, title: "Today I Learned", body: "Write TIL on my board" },
+    { id: 7, title: "Sleep", body: "Sleep tight" },
   ]);
 
   let content = null;
   let contextControl = null;
 
   if (mode === "WELCOME") {
-    content = <Article title="Welcome" body="You should do it"></Article>;
+    content = (
+      <Article title="Don't forget it" body="You should do these"></Article>
+    );
   } else if (mode === "READ") {
     let title,
       body = null;
@@ -252,7 +259,7 @@ function App() {
               setMode("CREATE");
             }}
           >
-            <button>Create</button>
+            <button>Add</button>
           </a>
         </li>
         {contextControl}
