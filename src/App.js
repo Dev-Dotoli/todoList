@@ -1,116 +1,260 @@
-import React from "react";
-import styled from "styled-components";
-import { Route, Switch } from "react-router-dom";
-import {useDispatch} from "react-redux";
-import { createBucket } from "./redux/modules/bucket";
+import "./App.css";
+import { useState } from "react";
 
-import BucketList from "./BucketList";
-import Detail from "./Detail";
-import NotFound from "./NotFound";
+function Header(props) {
+  return (
+    <header className="header">
+      <h1>
+        <a
+          href="/"
+          onClick={function (event) {
+            event.preventDefault();
+            props.onChangeMode();
+          }}
+        >
+          {props.title}
+        </a>{" "}
+      </h1>
+    </header>
+  );
+}
+
+function Nav(props) {
+  const lis = [];
+  for (let i = 0; i < props.topics.length; i++) {
+    let t = props.topics[i];
+    lis.push(
+      <li key={t.id}>
+        <a
+          id={t.id}
+          href={"/read/" + t.id}
+          onClick={function (event) {
+            event.preventDefault();
+            props.onChangeMode(Number(event.target.id)); // (t.id) no p
+          }}
+        >
+          {t.title}
+        </a>
+      </li>
+    );
+  }
+  return (
+    <nav className="nav">
+      <ol className="ol">{lis}</ol>
+    </nav>
+  );
+}
+
+function Article(props) {
+  return (
+    <article className="article">
+      <h2>{props.title}</h2>
+      {props.body}
+    </article>
+  );
+}
+
+function Create(props) {
+  return (
+    <article className="article">
+      <h2>create</h2>
+      <form
+        onSubmit={function (event) {
+          event.preventDefault();
+          const title = event.target.title.value;
+          const body = event.target.body.value;
+          props.onCreate(title, body);
+        }}
+      >
+        <p>
+          <input type="text" name="title" placeholder="title" />
+        </p>
+        <p>
+          <textarea name="body" placeholder="body"></textarea>
+        </p>
+        <p>
+          <input type="submit" value="Create"></input>
+        </p>
+      </form>
+    </article>
+  );
+}
+
+function Update(props) {
+  const [title, setTitle] = useState(props.title);
+  const [body, setBody] = useState(props.body);
+  return (
+    <article className="article">
+      <h2>Update</h2>
+      <form
+        onSubmit={function (event) {
+          event.preventDefault();
+          const title = event.target.title.value;
+          const body = event.target.body.value;
+          props.onUpdate(title, body);
+        }}
+      >
+        <p>
+          <input
+            type="text"
+            name="title"
+            placeholder="title"
+            value={title}
+            onChange={function (event) {
+              setTitle(event.target.value);
+            }}
+          />
+        </p>
+        <p>
+          <textarea
+            name="body"
+            placeholder="body"
+            value={body}
+            onChange={function (event) {
+              setBody(event.target.value);
+            }}
+          ></textarea>
+        </p>
+        <p>
+          <input type="submit" value="Update"></input>
+        </p>
+      </form>
+    </article>
+  );
+}
 
 function App() {
+  const [mode, setMode] = useState("WELCOME");
+  const [id, setId] = useState(null);
+  const [nextId, setNextId] = useState(4);
+  const [topics, setTopics] = useState([
+    { id: 1, title: "Todolist", body: "Todolist done..." },
+    { id: 2, title: "Workout", body: "Work out byceps every day..." },
+    { id: 3, title: "Protein", body: "Eat protein at every meal..." },
+  ]);
 
-  const text = React.useRef(null);
-  const dispatch = useDispatch();
+  let content = null;
+  let contextControl = null;
 
-  const addBucketList = () => {
-    dispatch(createBucket(text.current.value));
-  };
+  if (mode === "WELCOME") {
+    content = <Article title="Welcome" body="You should do it"></Article>;
+  } else if (mode === "READ") {
+    let title,
+      body = null;
+    for (let i = 0; i < topics.length; i++) {
+      if (topics[i].id === id) {
+        title = topics[i].title;
+        body = topics[i].body;
+      }
+    }
+    content = <Article title={title} body={body}></Article>;
+    contextControl = (
+      <>
+        <li>
+          <a
+            href={"/update" + id}
+            onClick={function (event) {
+              event.preventDefault();
+              setMode("UPDATE");
+            }}
+          >
+            <button>Update</button>
+          </a>
+        </li>
+        <li>
+          <input
+            type="button"
+            value="Delete"
+            onClick={function () {
+              const newTopics = [];
+              for (let i = 0; i < topics.length; i++) {
+                if (topics[i].id !== id) {
+                  newTopics.push(topics[i]);
+                }
+              }
+              setTopics(newTopics);
+              setMode("WELCOME");
+            }}
+          />
+        </li>
+      </>
+    );
+  } else if (mode === "CREATE") {
+    content = (
+      <Create
+        onCreate={function (_title, _body) {
+          const newTopic = { id: nextId, title: _title, body: _body };
+          const newTopics = [...topics];
+          newTopics.push(newTopic);
+          setTopics(newTopics);
+          setMode("READ");
+          setId(nextId);
+          setNextId(nextId + 1);
+        }}
+      ></Create>
+    );
+  } else if (mode === "UPDATE") {
+    let title,
+      body = null;
+    for (let i = 0; i < topics.length; i++) {
+      if (topics[i].id === id) {
+        title = topics[i].title;
+        body = topics[i].body;
+      }
+    }
+    content = (
+      <Update
+        title={title}
+        body={body}
+        onUpdate={function (title, body) {
+          console.log(title, body);
+          const newTopics = [...topics];
+          const updatedTopic = { id: id, title: title, body: body };
+          for (let i = 0; i < newTopics.length; i++) {
+            if (newTopics[i].id === id) {
+              newTopics[i] = updatedTopic;
+              break;
+            }
+          }
+          setTopics(newTopics);
+          setMode("READ");
+        }}
+      ></Update>
+    );
+  }
 
   return (
     <div className="App">
-      <Container>
-        <Title>내 버킷리스트</Title>
-        <Line />
-        <Switch>
-          <Route exact path="/" component={BucketList} />
-          <Route exact path="/detail/:index" component={Detail} />
-          <Route component={NotFound} />
-        </Switch>
-      </Container>
-      <Input>
-        <input type="text" ref={text} />
-        <button onClick={addBucketList}>추가하기</button>
-      </Input>
+      <Header
+        title="Todolist"
+        onChangeMode={function () {
+          setMode("WELCOME");
+        }}
+      ></Header>
+      <Nav
+        topics={topics}
+        onChangeMode={function (_id) {
+          setMode("READ");
+          setId(_id);
+        }}
+      ></Nav>
+      {content}
+      <ul className="ulfoot">
+        <li className="btnlist">
+          <a
+            href="/create"
+            onClick={function (event) {
+              event.preventDefault();
+              setMode("CREATE");
+            }}
+          >
+            <button>Create</button>
+          </a>
+        </li>
+        {contextControl}
+      </ul>
     </div>
   );
 }
 
-const Input = styled.div`
-  max-width: 350px;
-  min-height: 10vh;
-  background-color: #fff;
-  padding: 16px;
-  margin: 20px auto;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-`;
-
-const Container = styled.div`
-  max-width: 350px;
-  min-height: 60vh;
-  background-color: #fff;
-  padding: 16px;
-  margin: 20px auto;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-`;
-
-const Title = styled.h1`
-  color: slateblue;
-  text-align: center;
-`;
-
-const Line = styled.hr`
-  margin: 16px 0px;
-  border: 1px dotted #ddd;
-`;
-
 export default App;
-
-
-// import React from "react";
-// import BucketList from "./BucketList";
-// import './style.css'
-
-
-// class App extends React.Component {
-//   constructor(props) {
-//     super(props);
-
-//     this.state = {
-//       list: ["영화관 가기", "매일 책읽기", "수영 배우기"],
-//     };
-
-//     this.text = React.createRef();
-//   }
-
-//   componentDidMount() { 
-//   }
-
-//   addBucket = () => {
-//     console.log(this.text.current.value);
-//     const new_item = this.text.current.value;
-//     this.setState({ list: [...this.state.list, new_item] });
-//   }
-
-//   render() {
-
-//     return (
-//       <div className="App">
-//         <div className="Container">
-//           <h1> TodoList </h1>
-//           <hr className="line" />
-//           <BucketList list={this.state.list} />
-//         </div>
-
-//         <div className="InputWrap">
-//           <input type="text" ref={this.text} />
-//           <button onClick={this.addBucket}>ADD</button>
-//         </div>
-//       </div>
-//     );
-//   }
-// }
-
-// export default App;
